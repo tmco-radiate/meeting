@@ -5,8 +5,8 @@ from supabase import create_client, Client
 app = FastAPI()
 
 # ===== Supabase接続 =====
-SUPABASE_URL = "https://xxxxx.supabase.co"
-SUPABASE_KEY = "your-anon-key"
+SUPABASE_URL = "https://xlgkstwpansjplguvuia.supabase.co"
+SUPABASE_KEY = "sb_publishable_0-r9X_H75sAFFKZLq1Ivjg_jNPmXepE"
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
