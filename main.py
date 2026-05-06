@@ -1,58 +1,64 @@
 from fastapi import FastAPI
-from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-import os
-from deta import Deta
-import json
-
-# 環境変数からプロジェクトキーを取得
-deta = Deta(os.getenv("DETA_PROJECT_KEY"))  # ← ここを修正
-users = deta.Base("fastapi-users")
-rooms = deta.Base("fastapi-rooms")
-bookings = deta.Base("fastapi-bookings")
-
 
 app = FastAPI()
 
+# 仮のDB（メモリ）
+users_db = []
+rooms_db = []
+bookings_db = []
+
 class User(BaseModel):
-  name: str
-  age: int
-  hometown: str
+    name: str
+    age: int
+    hometown: str
 
 class Room(BaseModel):
-  room_name: str
-  capacity: int
+    room_name: str
+    capacity: int
 
 class Booking(BaseModel):
-  user_key: str
-  room_key: str
-  reserved_num: int
-  start_date_time: str
-  end_date_time: str
+    user_key: str
+    room_key: str
+    reserved_num: int
+    start_date_time: str
+    end_date_time: str
 
+
+# ===== Users =====
 @app.get("/users")
 def read_user():
-  return next(users.fetch())
+    return users_db
 
-@app.post("/users",status_code=200)
+@app.post("/users")
 def create_user(user: User):
-  user= users.put(user.dict())
-  return json.dumps(user)
+    data = user.dict()
+    data["key"] = str(len(users_db) + 1)  # 簡易ID
+    users_db.append(data)
+    return data
 
+
+# ===== Rooms =====
 @app.get("/rooms")
 def read_room():
-  return next(rooms.fetch())
+    return rooms_db
 
-@app.post("/rooms",status_code=200)
+@app.post("/rooms")
 def create_room(room: Room):
-  room= rooms.put(room.dict())
-  return json.dumps(room)
+    data = room.dict()
+    data["key"] = str(len(rooms_db) + 1)
+    rooms_db.append(data)
+    return data
 
+
+# ===== Bookings =====
 @app.get("/bookings")
 def read_booking():
-  return next(bookings.fetch())
+    return bookings_db
 
-@app.post("/bookings",status_code=200)
+@app.post("/bookings")
 def create_booking(booking: Booking):
-  booking= bookings.put(booking.dict())
-  return json.dumps(booking)
+    data = booking.dict()
+    data["key"] = str(len(bookings_db) + 1)
+    bookings_db.append(data)
+    return data
