@@ -1,25 +1,31 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
+from supabase import create_client, Client
 
 app = FastAPI()
 
-# 仮のDB（メモリ）
-users_db = []
-rooms_db = []
-bookings_db = []
+# ===== Supabase接続 =====
+SUPABASE_URL = "https://xxxxx.supabase.co"
+SUPABASE_KEY = "your-anon-key"
 
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+
+# ===== Models =====
 class User(BaseModel):
     name: str
     age: int
     hometown: str
 
+
 class Room(BaseModel):
     room_name: str
     capacity: int
 
+
 class Booking(BaseModel):
-    user_key: str
-    room_key: str
+    user_id: str
+    room_id: str
     reserved_num: int
     start_date_time: str
     end_date_time: str
@@ -28,37 +34,37 @@ class Booking(BaseModel):
 # ===== Users =====
 @app.get("/users")
 def read_user():
-    return users_db
+    res = supabase.table("users").select("*").execute()
+    return res.data
+
 
 @app.post("/users")
 def create_user(user: User):
-    data = user.dict()
-    data["key"] = str(len(users_db) + 1)  # 簡易ID
-    users_db.append(data)
-    return data
+    res = supabase.table("users").insert(user.dict()).execute()
+    return res.data
 
 
 # ===== Rooms =====
 @app.get("/rooms")
 def read_room():
-    return rooms_db
+    res = supabase.table("rooms").select("*").execute()
+    return res.data
+
 
 @app.post("/rooms")
 def create_room(room: Room):
-    data = room.dict()
-    data["key"] = str(len(rooms_db) + 1)
-    rooms_db.append(data)
-    return data
+    res = supabase.table("rooms").insert(room.dict()).execute()
+    return res.data
 
 
 # ===== Bookings =====
 @app.get("/bookings")
 def read_booking():
-    return bookings_db
+    res = supabase.table("bookings").select("*").execute()
+    return res.data
+
 
 @app.post("/bookings")
 def create_booking(booking: Booking):
-    data = booking.dict()
-    data["key"] = str(len(bookings_db) + 1)
-    bookings_db.append(data)
-    return data
+    res = supabase.table("bookings").insert(booking.dict()).execute()
+    return res.data
