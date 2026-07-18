@@ -30,17 +30,6 @@ class Booking(BaseModel):
     reserved_num: int
     start_date_time: str
     end_date_time: str
-
-import socket
-
-@app.get("/debug")
-def debug():
-    host = "xlgkstwpansjplguvuia.supabase.co"
-    try:
-        ip = socket.gethostbyname(host)
-        return {"host": host, "ip": ip}
-    except Exception as e:
-        return {"error": str(e)}
         
 # ===== Users =====
 @app.get("/users")
