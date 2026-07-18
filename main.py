@@ -9,10 +9,6 @@ app = FastAPI()
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
 
-print("URL:", SUPABASE_URL)
-print("repr:", repr(SUPABASE_URL))
-print("Length:", len(SUPABASE_URL))
-
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
@@ -35,7 +31,17 @@ class Booking(BaseModel):
     start_date_time: str
     end_date_time: str
 
+import socket
 
+@app.get("/debug")
+def debug():
+    host = "xlgkstwpansjplguvuia.supabase.co"
+    try:
+        ip = socket.gethostbyname(host)
+        return {"host": host, "ip": ip}
+    except Exception as e:
+        return {"error": str(e)}
+        
 # ===== Users =====
 @app.get("/users")
 def read_user():
