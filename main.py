@@ -63,6 +63,23 @@ def read_booking():
     res = supabase.table("bookings").select("*").execute()
     return res.data
 
+# ===== Health Check =====
+@app.get("/health")
+def health_check():
+    try:
+        res = supabase.table("users").select("id").limit(1).execute()
+
+        return {
+            "status": "ok",
+            "supabase": "connected"
+        }
+
+    except Exception as e:
+        return {
+            "status": "error",
+            "supabase": "disconnected",
+            "message": str(e)
+        }
 
 @app.post("/bookings")
 def create_booking(booking: Booking):
